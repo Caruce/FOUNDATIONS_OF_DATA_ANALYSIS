@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<meta name="progressive" content="true" />
+<meta name="allow-skip" content="true" />
+
+<title>ST 516 - Module 3 Lab</title>
+
+
+<!-- highlightjs -->
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+<!-- taken from https://github.com/rstudio/rmarkdown/blob/67b7f5fc779e4cfdfd0f021d3d7745b6b6e17149/inst/rmd/h/default.html#L296-L362 -->
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("section-TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+<!-- end tabsets -->
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="pageContent band">
+<div class="bandContent page">
+
+<div class="topics">
+
+<div id="section-introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In this lab you’ll use simulation to explore sampling distributions. Recall that the sampling distribution represents the distribution of a <strong>statistic</strong> based on all possible samples of a <strong>fixed size</strong> from a certain <strong>population</strong>.</p>
+<p>In this lab we’ll choose a specific population distribution, use the sample mean as our statistic, and investigate the sampling distribution for a few different sample sizes. In homework you’ll get to do the same exploration for a different population distribution.</p>
+<p>For this lab you’ll assume the population has a <a href="https://en.wikipedia.org/wiki/Gamma_distribution">Gamma distribution</a> with a shape parameter set to 5, and a rate parameter set to 1, often abbreviated to Gamma(5, 1). This distribution is shown below: <img src="lab-3-learnr_files/figure-html/unnamed-chunk-2-1.png" width="480" /></p>
+<div class="panel panel-default">
+<div data-label="expectation" class="tutorial-question panel-body">
+<div id="expectation-answer_container" class="shiny-html-output"></div>
+<div id="expectation-message_container" class="shiny-html-output"></div>
+<div id="expectation-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+</div>
+<div id="section-sampling-from-the-population" class="section level2">
+<h2>Sampling from the population</h2>
+<p>The function <code>rgamma()</code> draws samples from a Gamma distribution. The first argument <code>n</code> determines the sample size, the next arguments, <code>shape</code> and <code>rate</code> correspond to the parameters. So, for example to generate a sample of size 10 from our population we could run: <code>rgamma(n = 10, shape = 5, rate = 1)</code>.</p>
+Go ahead and try this:
+<div class="tutorial-exercise" data-label="rgamma" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Generate 10 Gamma(5, 1) random variables</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":5,"fig.height":3,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":480,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="rgamma-hint" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>rgamma(n = 10, shape = 5, rate = 1)</code></pre>
+</div>
+<p>So there they are, but the list is not particularly insightful. Let’s generate 1000, and look at a histogram to make sure they are actually coming from the same distribution as the distribution you saw earlier.</p>
+Run this code to generate a larger sample from the population and make a histogram of it
+<div class="tutorial-exercise" data-label="compare-pop" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>one_large_sample &lt;- rgamma(n = 1000, shape = 5, rate = 1) # Generate a sample of size 1000 from Gamma(5, 1) 
+qplot(one_large_sample)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":5,"fig.height":3,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":480,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>How does it compare to the population? <img src="lab-3-learnr_files/figure-html/unnamed-chunk-3-1.png" width="480" /></p>
+<p>Looks pretty similar! This is an example of a single sample of size 1000 from the population. Since, <span class="math inline">\(n = 1000\)</span> is pretty large, we expect the histogram of this large sample to be a good estimate of the population distribution.</p>
+<p>One way to use a large sample from a population, is to use it to estimate the expected value of a draw from the population (a.k.a population mean, or true mean). We simply use the sample mean of our large sample:</p>
+<pre class="r"><code>one_large_sample &lt;- rgamma(n = 1000, shape = 5, rate = 1) 
+mean(one_large_sample)</code></pre>
+<pre><code>## [1] 5.059611</code></pre>
+<p>It’s not exactly five, because it’s just an estimate based on 1000 simulated draws. To get a better estimate you could increase the sample size.</p>
+<p>Homework hint: this could be called “using simulation to estimate the expected value”.</p>
+</div>
+<div id="section-sampling-distributions" class="section level2">
+<h2>Sampling Distributions</h2>
+<p>So far you’ve just looked at the distribution of a sample. Now, you’ll estimate a sampling distribution for the sample mean with samples of size <span class="math inline">\(n = 10\)</span>. In practice this means we need to repeat many times:</p>
+<ol style="list-style-type: decimal">
+<li>Take a sample of size <span class="math inline">\(n = 10\)</span> from the Gamma(5, 1) population</li>
+<li>Record the mean of the sample from step 1.</li>
+</ol>
+<p>A histogram of the sample means from step 2. will be our estimate of the sampling distribution for the sample mean with samples of size <span class="math inline">\(n = 10\)</span>.</p>
+<p>Let’s see how that looks in code. First, we draw a sample of size ten from a Gamma(5,1), and store it in <code>first_sample</code>:</p>
+<pre class="r"><code>first_sample &lt;- rgamma(n = 10, shape = 5, rate = 1)</code></pre>
+<p>Then we find the mean of this sample:</p>
+<pre class="r"><code>mean(first_sample)</code></pre>
+<pre><code>## [1] 3.857753</code></pre>
+<p>Remember that the sample mean is an estimate of the expectation (a.k.a true mean) of a Gamma(5, 1), which is five.</p>
+<p>Make sense? Let’s cut down on the typing a bit, by combining these steps into one line of code.</p>
+<strong>Perform the above actions in one line of code, by using the <code>rgamma()</code> call as the argument to <code>mean()</code>.</strong>
+<div class="tutorial-exercise" data-label="meangamma" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":5,"fig.height":3,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":480,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="meangamma-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>mean(rgamma(n = 10, shape = 5, rate = 1))</code></pre>
+</div>
+<p>Remember, you will get a different value each time you run the code, because the function is randomly generating Gamma random variables each time it is called, before taking the mean. The sampling distribution describes the distribution of these values. To estimate this sampling distribution we need to repeat these steps many times and take a look at a histogram of them.</p>
+<p>Let’s repeat (think <code>replicate()</code>) these steps 5,000 times:</p>
+<pre class="r"><code>many_sample_means &lt;- replicate(5000, 
+  mean(rgamma(n = 10, shape = 5, rate = 1)))
+
+qplot(many_sample_means, binwidth = 0.2, 
+  xlim = c(0, 20))                       </code></pre>
+<p><img src="lab-3-learnr_files/figure-html/unnamed-chunk-7-1.png" width="480" /></p>
+<p><em>The additional argument <code>xlim</code> to <code>qplot()</code> sets the limits of the x-axis. I’m setting them to 0 to 20 to keep all our plots on the same scale as the population.</em></p>
+<p>This histogram is the result of <strong>5,000 replications</strong> of <strong>taking the mean of samples of size ten</strong>. It is our estimate of what the “sampling distribution of the sample mean for samples of size 10 from a Gamma(5, 1) population” looks like.</p>
+<p>The histogram is centered over five, so <em>on average</em> the mean of a size ten sample gives us the true population mean. But quite often the estimate will be above six, or below four. That is a pretty big miss. If we want more confidence in our estimate, we would have to take larger samples.</p>
+<p>Compare the histogram to the population distribution:</p>
+<pre class="r"><code>pop</code></pre>
+<p><img src="lab-3-learnr_files/figure-html/unnamed-chunk-8-1.png" width="480" /></p>
+<div class="panel panel-default">
+<div data-label="sampling-dist" class="tutorial-question panel-body">
+<div id="sampling-dist-answer_container" class="shiny-html-output"></div>
+<div id="sampling-dist-message_container" class="shiny-html-output"></div>
+<div id="sampling-dist-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+</div>
+<div id="section-the-central-limit-theorem" class="section level2">
+<h2>The Central Limit Theorem</h2>
+<p>Now, let’s explore what happens when the sample size, <span class="math inline">\(n\)</span>, increases. As a reference here’s the histogram for the sampling distribution of the mean for samples of size 10 from the Gamma(5, 1) population from the previous section:</p>
+<pre class="r"><code>qplot(many_sample_means, binwidth = 0.2, 
+  xlim = c(0, 20))  </code></pre>
+<p><img src="lab-3-learnr_files/figure-html/unnamed-chunk-9-1.png" width="480" /></p>
+<strong>Edit the code below to take samples of size <span class="math inline">\(n = 50\)</span></strong>:
+<div class="tutorial-exercise" data-label="sample-50" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>many_sample_means &lt;- replicate(5000, 
+  mean(rgamma(n = 10, shape = 5, rate = 1)))
+
+qplot(many_sample_means, binwidth = .05, 
+  xlim = c(0, 20))                       </code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":5,"fig.height":3,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":480,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="sample-50-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>many_sample_means &lt;- replicate(5000, 
+  mean(rgamma(n = 50, shape = 5, rate = 1)))
+
+qplot(many_sample_means, binwidth = .05, 
+  xlim = c(0, 20))                       </code></pre>
+</div>
+<p>The histogram should still be centered over five (the true population mean), but now the histogram is much narrower, meaning that the sample means are varying less. In other words, our estimate of the population mean is getting much better when our <strong>sample size</strong> increases.</p>
+Let’s try one more. <strong>Create a histogram of the sampling distribution for sample of size 100 from the Gamma(5,1) distribution.</strong>
+<div class="tutorial-exercise" data-label="n-hundred" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":5,"fig.height":3,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":480,"warning":false,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="n-hundred-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>many_sample_means &lt;- replicate(5000, 
+  mean(rgamma(n = 100, shape = 5, rate = 1)))
+
+qplot(many_sample_means, binwidth = .05, 
+  xlim = c(0, 20))    </code></pre>
+</div>
+<p>Still centered over five, the true mean of a Gamma(5,1) distribution, but the histogram is even narrower! The variance of the sample mean is decreasing as the sample size increases. Not only that, the shape of the histogram is getting even more Normal. This is the Central Limit Theorem in action!</p>
+<p>Remember the Central Limit Theorem says, for a population with mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>, the sampling distribution of the sample mean for large enough <span class="math inline">\(n\)</span> is approximately Normal(<span class="math inline">\(\mu\)</span>, <span class="math inline">\(\sigma^2/n\)</span>). In our example with a Gamma(5, 1) population the population mean is 5 and the population variance is also 5.</p>
+<p>Below, I’ve drawn the histogram for the sample mean from samples of size 100 from this Gamma(5, 1) population. The black line overlaid is a Normal distribution with mean and variance controlled by the values in corresponding the boxes.</p>
+<p><strong>Adjust the mean and variance values of the Normal distribution to those predicted by the Central Limit Theorem.</strong> You should get a close correspondence between the curve and histogram.</p>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mu-label" for="mu">Mean</label>
+<input id="mu" type="number" class="form-control" value="4.5" min="4" max="6" step="0.5"/>
+</div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="sigma_2-label" for="sigma_2">Variance</label>
+<input id="sigma_2" type="number" class="form-control" value="0.5" min="0" step="0.05"/>
+</div>
+<p><div id="distPlot" class="shiny-plot-output" style="width:100%;height:400px;"></div></p>
+<div class="panel panel-default">
+<div data-label="clt" class="tutorial-question panel-body">
+<div id="clt-answer_container" class="shiny-html-output"></div>
+<div id="clt-message_container" class="shiny-html-output"></div>
+<div id="clt-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+By completing this lab, you’ve demonstrated the Central Limit Theorem for a particular population. Don’t forgot to fill out and submit the lab submission file: <code>lab-3-submission.Rmd</code>. 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::register_http_handlers(session, metadata = NULL)
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+session$onSessionEnded(function() {
+        learnr:::session_stop_event(session)
+      })
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server-start">
+library(ggplot2)
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "expectation",     question = structure("Looking at the distribution, what do you think the expected value of a Gamma(5, 1) random variable is?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_5d83a7c",         option = "0", value = "0", label = structure("0", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_615ea27",         option = "5", value = "5", label = structure("5", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_de342a5",         option = "10", value = "10", label = structure("10", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9595b63",         option = "15", value = "15", label = structure("15", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Yes, in fact, the expected value is exactly 5.", html = TRUE, class = c("html",     "character")), try_again = structure("Not quite, the expected value is a measure of center.  This distribution is centered around 5.", html = TRUE, class = c("html",     "character")), incorrect = structure("Not quite, the expected value is a measure of center.  This distribution is centered around 5.", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "expectation-answer", question = "expectation"),     loading = structure("<strong>Loading:<\u002fstrong> \nLooking at the distribution, what do you think the expected value of a Gamma(5, 1) random variable is?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1568941818.2694, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-rgamma-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-rgamma-code-editor`)), session)
+output$`tutorial-exercise-rgamma-output` <- renderUI({
+  `tutorial-exercise-rgamma-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-compare-pop-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-compare-pop-code-editor`)), session)
+output$`tutorial-exercise-compare-pop-output` <- renderUI({
+  `tutorial-exercise-compare-pop-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-meangamma-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-meangamma-code-editor`)), session)
+output$`tutorial-exercise-meangamma-output` <- renderUI({
+  `tutorial-exercise-meangamma-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "sampling-dist",     question = structure("Which statement best captures the differences between the sampling distribution and the population distribution? The sampling distribution is:", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_e240e36",         option = "narrower than the population distribution.",         value = "narrower than the population distribution.",         label = structure("narrower than the population distribution.", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_632e05c",         option = "more symmetric than the population distribution.",         value = "more symmetric than the population distribution.",         label = structure("more symmetric than the population distribution.", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_4c0df8e",         option = "both narrower and more symmetric than the population distribution.",         value = "both narrower and more symmetric than the population distribution.",         label = structure("both narrower and more symmetric than the population distribution.", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Yes, since our statistic is the mean, the Central Limit Theorem applies, and we expect the sampling distribution to have less spread, and be closer to a Normal distribution than the population distribution.", html = TRUE, class = c("html",     "character")), try_again = structure("True, but it is both narrower and more symmetric due to the Central Limit Theorem.", html = TRUE, class = c("html",     "character")), incorrect = structure("True, but it is both narrower and more symmetric due to the Central Limit Theorem.", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "sampling-dist-answer", question = "sampling-dist"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich statement best captures the differences between the sampling distribution and the population distribution? The sampling distribution is:\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 45069445.4790129, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-sample-50-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-sample-50-code-editor`)), session)
+output$`tutorial-exercise-sample-50-output` <- renderUI({
+  `tutorial-exercise-sample-50-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-n-hundred-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-n-hundred-code-editor`)), session)
+output$`tutorial-exercise-n-hundred-output` <- renderUI({
+  `tutorial-exercise-n-hundred-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+many_sample_means <- replicate(5000, 
+  mean(rgamma(n = 100, shape = 5, rate = 1)))
+
+output$distPlot <- renderPlot({
+  x = seq(0, 10, 0.05);
+  hist(many_sample_means, breaks=x, xlim = c(4, 6))
+  
+  x = seq(0, 10, 0.01);
+  lines(x, dnorm(x, mean=input$mu, sd=sqrt(input$sigma_2))*5000* 0.05);
+  ## lines(x, dnorm(x, 5, 0.2) * 5000 * 0.05);
+  
+ ##  qplot(many_sample_means, binwidth = .05, fill = I("grey50")) +
+  #  stat_function(
+      #fun = function(x) 0.05 * 5000 * dnorm(x, mean = input$mu, sd = sqrt(input$sigma_2)), 
+ #     fun = function(x) 0.05 * 5000 * dnorm(x, mean = 5, sd = sqrt(0.5)), 
+ #     size = 2) 
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "clt", question = structure("For a Gamma(5, 1) population, the Central Limit Theorem predicts the sampling distribution of the sample mean for samples of size 100 is approximately Normal with", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_1655bb1",     option = "mean equal to 1 and variance equal to 1.", value = "mean equal to 1 and variance equal to 1.",     label = structure("mean equal to 1 and variance equal to 1.", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_96098fe",     option = "mean equal to 5 and variance equal to 1.", value = "mean equal to 5 and variance equal to 1.",     label = structure("mean equal to 5 and variance equal to 1.", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_7e7addf",     option = "mean equal to 5 and variance equal to 0.22.", value = "mean equal to 5 and variance equal to 0.22.",     label = structure("mean equal to 5 and variance equal to 0.22.", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_dae3d53",     option = "mean equal to 5 and variance equal to 0.05.", value = "mean equal to 5 and variance equal to 0.05.",     label = structure("mean equal to 5 and variance equal to 0.05.", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Yes, and notice how well the approximation works here, the curve and histogram are very close.", html = TRUE, class = c("html", "character")), try_again = structure("Not quite.", html = TRUE, class = c("html", "character")), incorrect = structure("Not quite.", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "clt-answer", question = "clt"), loading = structure("<strong>Loading:<\u002fstrong> \nFor a Gamma(5, 1) population, the Central Limit Theorem predicts the sampling distribution of the sample mean for samples of size 100 is approximately Normal with\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1267522596.90976, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ <!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="dependencies">
+{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["header-attrs"]},{"type":"character","attributes":{},"value":["2.11"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/pandoc"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["header-attrs.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["3.6.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/3.6.0"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery-3.6.0.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquerylib"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/cerulean.min.css"]},{"type":"character","attributes":{},"value":["<style>h1 {font-size: 34px;}\n       h1.title {font-size: 38px;}\n       h2 {font-size: 30px;}\n       h3 {font-size: 24px;}\n       h4 {font-size: 18px;}\n       h5 {font-size: 16px;}\n       h6 {font-size: 12px;}\n       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}\n       pre:not([class]) { background-color: white }<\/style>"]},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["pagedtable"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/pagedtable-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/pagedtable.js"]},{"type":"character","attributes":{},"value":["css/pagedtable.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["textmate.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-format"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmarkdown/templates/tutorial/resources"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-format.js"]},{"type":"character","attributes":{},"value":["tutorial-format.css","rstudio-theme.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["3.6.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/3.6.0"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery-3.6.0.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquerylib"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["navigation"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/navigation-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tabsets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["default.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["3.6.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/3.6.0"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery-3.6.0.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquerylib"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["font-awesome"]},{"type":"character","attributes":{},"value":["5.1.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/fontawesome"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["css/all.css","css/v4-shims.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["idb-keyvalue"]},{"type":"character","attributes":{},"value":["3.2.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/idb-keyval"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["idb-keyval-iife-compat.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]}]}
+</script>
+<!--/html_preserve-->
+<!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="execution_dependencies">
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59]}},"value":[{"type":"character","attributes":{},"value":["backports","base","bslib","checkmate","colorspace","compiler","crayon","datasets","digest","ellipsis","evaluate","fansi","farver","fastmap","ggplot2","glue","graphics","grDevices","grid","gtable","highr","htmltools","htmlwidgets","httpuv","jquerylib","jsonlite","knitr","labeling","later","learnr","lifecycle","magrittr","markdown","methods","mime","munsell","pillar","pkgconfig","promises","R6","Rcpp","rlang","rmarkdown","rprojroot","sass","scales","shiny","stats","stringi","stringr","tibble","tools","utf8","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["1.2.1","4.1.1","0.3.1","2.0.0","2.0-2","4.1.1","1.4.1","4.1.1","0.6.28","0.3.2","0.14","0.5.0","2.1.0","1.1.0","3.3.5","1.4.2","4.1.1","4.1.1","4.1.1","0.3.0","0.9","0.5.2","1.5.4","1.6.3","0.1.4","1.7.2","1.34","0.4.2","1.3.0","0.10.1","1.0.1","2.0.1","1.1","4.1.1","0.11","0.5.0","1.6.3","2.0.3","1.2.0.1","2.5.1","1.0.7","0.4.11","2.11","2.0.2","0.4.0","1.1.1","1.7.1","4.1.1","1.7.4","1.4.0","3.1.5","4.1.1","1.2.2","4.1.1","0.3.8","2.4.2","0.26","1.8-4","2.2.1"]}]}]}
+</script>
+<!--/html_preserve-->
+</div>
+
+</div> <!-- topics -->
+
+<div class="topicsContainer">
+<div class="topicsPositioner">
+<div class="band">
+<div class="bandContent topicsListContainer">
+
+<!-- begin doc-metadata -->
+<div id="doc-metadata">
+<h2 class="title toc-ignore" style="display:none;">ST 516 - Module 3 Lab</h2>
+</div>
+<!-- end doc-metadata -->
+
+</div> <!-- bandContent.topicsListContainer -->
+</div> <!-- band -->
+</div> <!-- topicsPositioner -->
+</div> <!-- topicsContainer -->
+
+
+</div> <!-- bandContent page -->
+</div> <!-- pageContent band -->
+
+
+
+
+<script>
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+
+</body>
+
+</html>

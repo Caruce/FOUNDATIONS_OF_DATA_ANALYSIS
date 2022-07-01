@@ -1,0 +1,171 @@
+---
+title: "progress report"
+author: "Rui Gao"
+date: "11/30/2021"
+output: pdf_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(2021)
+yrbss_2007 <- readRDS("yrbss_2007.rds")
+yrbss_2017 <- readRDS("yrbss_2017.rds")
+
+library(tidyverse)
+library(ggplot2)
+
+```
+
+##Task 1
+### a. Using repeated samples of size n = 10, 100, and 1000 from the bmi variable, describe the sampling distribution of the sample mean of BMI in 2017. Include at least one plot to help describe your results. Report the means and standard deviations of the sampling distributions, and describe how they change with increasing sample size.
+
+```{r }
+#constant 
+sample_size_n = c(10,100,1000)
+set.seed(100)
+for (i in sample_size_n){
+  index<-sample(1:length(yrbss_2017$year),i)
+  newdf <- yrbss_2017[index,]
+  hist(newdf$bmi,main=c("sample size",i))
+  cat("Sample size:",i, "mean",mean(newdf$bmi),"sd",sd(newdf$bmi),"\n")
+}
+```
+
+#### It is clear to see that the distribution is not normal for 10 sample size, but the bmi distribution of 100 and 1000 sample size looks decent for me. We also can see that the last two plots are right skewed.
+
+
+
+### b. Repeat the simulation in part (a), but this time use the 25th percentile as the sample statistic. In R, quantile(x, prob = 0.25) will give you the 25th percentile of the values in x.
+```{r}
+set.seed(100)
+for (i in sample_size_n){
+  index<-sample(1:length(yrbss_2017$year),i)
+  newdf <- yrbss_2017[index,]
+  ## hist(newdf$bmi,main=c("sample size",i))
+  cat("Sample size:",i, "25th percentile",quantile(newdf$bmi, prob = 0.25),"sd",sd(newdf$bmi),"\n")
+}
+```
+
+### c. Repeat the simulation in part (a), but this time use the sample minimum as the sample statistic. 
+```{r}
+set.seed(100)
+for (i in sample_size_n){
+  index<-sample(1:length(yrbss_2017$year),i)
+  newdf <- yrbss_2017[index,]
+  ## hist(newdf$bmi,main=c("sample size",i))
+  cat("Sample size:",i, "minimum",min(newdf$bmi),"sd",sd(newdf$bmi),"\n")
+}
+```
+
+
+### d.Describe the sampling distribution of the difference in the sample median BMI between 2017 and 2007, by using repeated samples of size (n1 = 5,n2 = 5), (n1 = 10,n2 = 10) and (n1 = 100,n2 = 100). Report the means and standard deviations of the sampling distributions, and describe how they change with the different sample sizes.
+```{r}
+new_sample_size = c(5,10,100)
+for (i in new_sample_size){
+  set.seed(100)
+  index2007<-sample(1:length(yrbss_2007$year),i)
+  index2017<-sample(1:length(yrbss_2017$year),i)
+  sample2007df<-yrbss_2007[index2007,]
+  sample2017df<-yrbss_2017[index2017,]
+  cat("2007 dataset ","sample size:", i, "mean",mean(sample2007df$bmi), "median",median(sample2007df$bmi), "sd", sd(sample2007df$bmi),"\n")
+  cat("2017 dataset ","sample size:", i, "mean",mean(sample2017df$bmi), "median",median(sample2017df$bmi), "sd", sd(sample2017df$bmi),"\n")
+}
+```
+
+
+
+```
+n_bmi <- 1000
+pop_sd_2017 <- sd(yrbss_2017$bmi)
+length_2017_bmi <- length(nchar(yrbss_2017$bmi))
+
+df_2017_bmi <- data.frame(yrbss_2017$bmi)
+df_2017_bmi$index <- 1:nrow(df_2017_bmi)
+```
+
+```{r }
+#I don't know how to select multiple values by index in column
+#I tried convert it into rows,
+#I also tried convert the data frame to value,
+#and some other ways, but still......
+#not sure where are the mistakes
+#so, I'd rather just write frames of codes here
+
+#function of selecting numbers from the dataset
+
+sample.int(length_2017_bmi, n, replace = TRUE)
+
+
+get_value_2017 <- function(n){
+with(df_2017_bmi, yrbss_2017.bmi[index == 1])
+}
+
+
+
+```
+
+```{r }
+#get sample mean's function
+```
+```
+get_mean_2017 <- function(n, n_bmi, pop_sd_2017){
+  replicate(n_bmi, mean(get_value_2017))
+}
+```
+
+```{r }
+#generate random values for each group
+```
+```
+ns <- c(10, 100, 1000)
+values <- lapply(ns, get_value_2017, n = ns)
+```
+
+```{r }
+#plot for each group, I cannot check, so if this is wrong, I would do it separately 
+```
+```
+qplot(values)
+
+
+#calculate the 
+means <- lapply(ns, get_mean_2017, n_bmi = n_bmi, pop_sd = pop_sd)
+
+
+spread_sampdist <- sapply(means, sd)
+true_se <- pop_sd_2017/ns
+
+rbind(round(spread_sampdist, 3),
+round(true_se, 3))
+
+```
+
+```{r }
+#conclusion 
+```
+```
+The means and standard deviations for each group are...,
+comparing them with the population's mean and standard deviation, 
+we can notice that as the size changed, 
+
+
+```
+
+
+
+
+##Task 2
+1. How has the BMI of high-school students changed between 2007 and 2017? Are high-schoolers getting more overweight?
+
+Comparing the means and medians of BMI of two different years, I will try the two sample test and Mood's test. However, since the dietary habit hasn't changed too much during the decade and the food suppliers/brands are almost the same in the USA, we cannot say the data is totally independent.
+
+
+2. In 2017, are 12th graders more or less likely than 9th graders to be “physically active at least 60 minutes per day on 5 or more days”?
+
+Finding the proportions' difference between two graders, contrasting the mean and confident interval between them. As the leaving time decrease, the 12th graders are facing the more and more enrollment pressure, does your intuition correct?
+
+
+3. How much sleep do highschoolers get?
+
+Try to calculate the mean and interval of sleeping time. 
+The data is discrete and unaccurate, would that be a problem? The schools have basically the same schedule for students, it's hard to say the data is independent. By the way, if you need me to tell you these information, I don't even sure the answer because I don't count them and the answer would also be influenced by the near days' situations rather than the real situations.

@@ -1,0 +1,51 @@
+---
+title: "Lab 4 Submission"
+author: "Rui Gao"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Instructions
+
+Complete the lab tutorial before completing this file.  Use the R Markdown version of this file to complete and submit your homework.  Items in **bold** require an answer. Make sure you change the author in the header to your own name. 
+
+The following three lines are taken from the lab tutorial:
+```{r, eval = FALSE}
+Z <- (mean(x) - 2.5) / (sd(x)/sqrt(length(x)))
+2 * pnorm(abs(Z), mean = 0, sd = 1, lower.tail = FALSE)
+mean(x) - qnorm(0.975) * sd(x)/sqrt(length(x))
+```
+
+Consider the following six components seen in this code:
+
+* `mean(x)`
+* `2.5`
+* `sd(x)`
+* `length(x)`
+* `qnorm(0.975)`
+* `sd(x) / sqrt(length(x))`
+
+**For each of the six components, match it to the corresponding notation and description from the following lists**.
+
+Mathematical notation (these are written using LaTeX notation, you may need to 
+Knit to preview them:
+
+* $\text{SE}_{\overline{x}}$           is sd(x)/sqrt(length(x))
+* $\overline{x}$                       is mean(x)
+* $s$                                  is sd(x)
+* $z_{\alpha/2}$ for $\alpha = 0.05$   is qnorm(0.975)
+* $n$                                  is length(x)
+* $\mu_0$                              is 2.5
+
+Description:
+
+* population mean under the null hypothesis is 2.5
+* sample size is length(x)
+* critical value for an $\alpha = 0.05$ level Z-test is qnorm(0.975)
+* sample standard deviation is sd(x)
+* standard error of the mean is sd(x)/sqrt(length(x))
+* sample average is mean(x)

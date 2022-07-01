@@ -1,0 +1,27 @@
+---
+title: "Lab 7 Submission"
+author: "Rui Gao"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(1908) 
+```
+
+# Instructions
+
+Complete the lab tutorial before completing this file.  Use the R Markdown version of this file to complete and submit your homework.  Items in **bold** require an answer. Make sure you change the author in the header to your own name. 
+
+In the lab you simulated p-values under various scenarios.
+
+1. **Describe what a histogram of the simulated p-values will look like in a scenario where the p-values are valid.**
+The amount of p-values in different value of 0 to 1 should be similar. The distribution should looks like a rectangle.
+
+2. **Describe an example of what a histogram of the simulated p-values may look like in a scenario where the p-values are not valid.**
+Image a Beta(0.5,0.5) and Uniform(0,1). We take 10 items for one and 30 from another, then calculate the p-values. We do this 10000 times and draw a picture of the distribution of p-values.It may looks like an axe, which has a higher pillar in one side and low values for the rest of x-axis.
+
+3. **To examine the validity of p-values, data was simulated to satisfy the null hypothesis.  Why is it unnecessary to generate data that satisfies the null hypothesis when you evaluate the validity of confidence intervals?**
+Because we want check if the CI still works well when the null is false.
+

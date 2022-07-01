@@ -1,0 +1,31 @@
+---
+title: "Lab 3 Solution"
+author: "Student"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Instructions
+
+Complete the lab tutorial before completing this file.  Use the R Markdown version of this file to complete and submit your homework.  Items in **bold** require an answer. Make sure you change the author in the header to your own name. 
+
+
+1. Consider the following code:
+    ```{r, eval = FALSE}
+    many_sample_means <- replicate(10, 
+      mean(rgamma(n = 5, shape = 1, rate = 5)))
+    ```
+    
+    **Fill in the blanks**: This code simulates **10** values from the sampling distribution of the sample mean for samples of size **5** from a Gamma(**1**, **5**) distribution.
+
+2. **Fill in the blanks** For a Gamma(5, 1) population (the same population as in the lab tutorial), the Central Limit Theorem predicts the sampling distribution of the sample mean for samples of size 100 is approximately Normal with mean **5** and variance **0.05** ($=\sigma^2/n = 5/100$).
+
+    *FYI this means the **standard deviation** of the sampling distribution of the sample mean for samples of size 100 from the Gamma(5, 1) is $\sqrt{0.05} = `r round(sqrt(0.05), 2)`$.*
+  
+3. In the lab you compared histograms of the sampling distribution of the sample mean with increasing sample sizes (10, 50, and 100).  **If the Central Limit Theorem applies, 
+what should you observe about the histograms as the sample size increases?**
+    
+    The histograms should all have the same center (the population mean), but as the sample size increases they should get narrower (i.e. the variance decreases) and closer in shape to a Normal distribution (e.g. more symmetric if the population is non-symmetric).
